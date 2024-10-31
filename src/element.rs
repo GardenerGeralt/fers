@@ -16,15 +16,11 @@ pub struct Element1D<'a> {
     global2local2: na::Matrix2<f32>,
 
     local2global4: na::Matrix4<f32>,
-    global2local4: na::Matrix4<f32>
+    global2local4: na::Matrix4<f32>,
 }
 
 impl<'a> Element1D<'a> {
-    pub fn new(
-        start_node: &Node, 
-        end_node: &Node, 
-        section: Option<&'a Section>
-    ) -> Element1D<'a> {
+    pub fn new(start_node: &Node, end_node: &Node, section: Option<&'a Section>) -> Element1D<'a> {
         let [start_x, start_y] = start_node.xy();
         let [end_x, end_y] = end_node.xy();
         let x_element = end_x - start_x;
@@ -49,16 +45,16 @@ impl<'a> Element1D<'a> {
             start_node_nr: start_node.nr,
             end_node_nr: end_node.nr,
 
-            section: section,
+            section,
 
-            length: length,
-            angle: angle,
+            length,
+            angle,
 
-            local2global2: local2global2,
-            global2local2: global2local2,
+            local2global2,
+            global2local2,
 
-            local2global4: local2global4,
-            global2local4: global2local4
+            local2global4,
+            global2local4,
         }
     }
 
@@ -68,15 +64,17 @@ impl<'a> Element1D<'a> {
 
     pub fn get_global_stiffness_matrix(&self) -> na::Matrix4<f32> {
         let local_stiffness_matrix = {
-            self.section.as_ref().unwrap()
-            .calc_local_stiffness_matrix(self.length)
+            self.section
+                .as_ref()
+                .unwrap()
+                .calc_local_stiffness_matrix(self.length)
         };
 
         self.local2global4 * &local_stiffness_matrix
     }
 
     pub fn get_strain(
-        &self, 
+        &self,
         global_displacement_1: na::Vector2<f32>,
         global_displacement_2: na::Vector2<f32>,
     ) -> f32 {
@@ -93,7 +91,7 @@ pub struct Element2D {
     pub node_c_nr: usize,
     pub node_d_nr: usize,
 
-    thickness: f32
+    thickness: f32,
 }
 
 #[cfg(test)]
@@ -106,12 +104,18 @@ mod tests {
     fn test_new() {
         let start_node = Node::new(1., 1., 0);
         let end_node = Node::new(2., 2., 0);
-        
+
         let section_area = 0.01;
         let poisson_ratio = 0.3;
         let elastic_modulus = 70e9;
-        let material = Material {poisson_ratio, elastic_modulus};
-        let section = Section {section_area: section_area, material: &material};
+        let material = Material {
+            poisson_ratio,
+            elastic_modulus,
+        };
+        let section = Section {
+            section_area,
+            material: &material,
+        };
 
         let element1d = Element1D::new(&start_node, &end_node, Some(&section));
 
@@ -122,3 +126,4 @@ mod tests {
         // assert_eq!(element1d.local2global2)
     }
 }
+

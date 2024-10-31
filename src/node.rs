@@ -1,10 +1,10 @@
-use std::ops;
 use crate::element::*;
+use std::ops;
 
 pub struct Node {
     x: f32,
     y: f32,
-    pub nr: usize
+    pub nr: usize,
 }
 
 impl<'a> ops::Sub<&'a Node> for &Node {
@@ -16,11 +16,12 @@ impl<'a> ops::Sub<&'a Node> for &Node {
 }
 
 impl Node {
-    pub fn new(x: f32, y: f32, nr:usize) -> Node {
-        Node {x, y, nr}
+    pub fn new(x: f32, y: f32, nr: usize) -> Node {
+        Node { x, y, nr }
     }
 
     pub fn xy(&self) -> [f32; 2] {
         [self.x.clone(), self.y.clone()]
     }
 }
+
